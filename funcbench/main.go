@@ -282,6 +282,13 @@ func startBenchmark(env Environment, bench *Benchmarker) ([]*benchstat.Table, er
 		return nil, errors.Wrapf(err, "checkout %s in worktree %s", targetCommit.String(), cmpWorkTreeDir)
 	}
 
+	bench.logger.Println("go mod vendor (in new workdir):", cmpWorkTreeDir)
+	cmd := exec.Command("go", "mod", "vendor")
+	cmd.Dir = cmpWorkTreeDir
+	if _, err := cmd.Output(); err != nil {
+		return nil, errors.Wrapf(err, "checkout %s in worktree %s", targetCommit.String(), cmpWorkTreeDir)
+	}
+
 	// Execute benchmark B.
 	oldResult, err := bench.exec(cmpWorkTreeDir, targetCommit)
 	if err != nil {

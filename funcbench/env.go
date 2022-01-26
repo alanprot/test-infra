@@ -17,6 +17,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -157,6 +158,11 @@ func newGitHubEnv(ctx context.Context, e environment, gc *gitHubClient, workspac
 	if err = wt.Checkout(&git.CheckoutOptions{
 		Branch: plumbing.NewBranchReferenceName("pullrequest"),
 	}); err != nil {
+		return nil, errors.Wrap(err, "switch to pull request branch")
+	}
+	cmd := exec.Command("go", "mod", "vendor")
+	cmd.Dir = workspace
+	if _, err := cmd.Output(); err != nil {
 		return nil, errors.Wrap(err, "switch to pull request branch")
 	}
 
